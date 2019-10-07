@@ -1,9 +1,11 @@
 module.exports = api => {
-  api.cache(false);
+  const isWeb = api.caller(isTargetWeb);
+
   return {
-    presets: ['module:metro-react-native-babel-preset'],
+    presets: ['babel-preset-expo'],
     plugins: [
-      [
+      '@babel/plugin-transform-modules-commonjs',
+      !isWeb && [
         'module-resolver',
         {
           alias: {
@@ -11,6 +13,10 @@ module.exports = api => {
           },
         },
       ],
-    ],
+    ].filter(Boolean),
   };
 };
+
+function isTargetWeb(caller) {
+  return caller && caller.name === 'babel-loader';
+}
